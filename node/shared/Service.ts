@@ -59,8 +59,11 @@ export default class Service {
   }
 
   private configureKafka(kafka: any) {
-    const { brokers, clientId, topic, producer, consumer } = kafka;
-    let options = { brokers, clientId, topic};
+
+    const { producer, consumer } = kafka;
+
+    let options = kafka;
+    delete options.producer; delete options.consumer;
 
     this.producer = new producer(options);
     this.consumer = new consumer(options);

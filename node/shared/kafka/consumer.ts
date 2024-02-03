@@ -69,7 +69,7 @@ class Consumer {
     const kafka = new Kafka({ 
       clientId: clientId,
       brokers: brokers
-    })
+    });
 
     const config: ConsumerConfig = {
       groupId: groupId

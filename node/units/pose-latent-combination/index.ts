@@ -19,6 +19,7 @@ const config: ServiceConfig = {
       topics: ['pose-estimation'],
       fromBeginning: false
     },
+    groupId: 'vision-middleware-units'
   }
 }
 
