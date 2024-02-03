@@ -1,5 +1,5 @@
 
-import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload } from 'kafkajs'
+import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload, ConsumerConfig } from 'kafkajs'
 
 class Consumer {
   
@@ -70,7 +70,11 @@ class Consumer {
       clientId: clientId,
       brokers: brokers
     })
-    const consumer = kafka.consumer({ groupId: groupId ? groupId : 'consumer-group' });
+
+    const config: ConsumerConfig = {
+      groupId: groupId
+    }
+    const consumer = kafka.consumer(config);
     consumer.on('consumer.connect', async () => {console.log(`${topic.topics[0]} consumer connected.`)})
     return consumer;
   }

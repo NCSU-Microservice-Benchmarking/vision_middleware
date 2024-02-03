@@ -1,4 +1,4 @@
-import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages } from 'kafkajs'
+import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages, ProducerConfig } from 'kafkajs'
 
 interface CustomMessageFormat { a: string }
 
@@ -56,11 +56,16 @@ class Producer {
 
   private create(options: any) : KafkaProducer {
     const { brokers, clientId, groupId, topic } = options;
+    
     const kafka = new Kafka({ 
       clientId: clientId,
       brokers: brokers
     })
-    const producer = kafka.producer();
+
+    const config: ProducerConfig = {
+     
+    }
+    const producer = kafka.producer(config);
     producer.on('producer.connect', async () => {console.log(`${topic.topics[0]} producer connected.`)})
     return producer;
   }

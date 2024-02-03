@@ -3,8 +3,8 @@ import Service from "../../shared/Service";
 
 import router from "./router";
 
-import Consumer from "./kafka/consumer";
-import Producer from "./kafka/producer";
+import Consumer from "../../shared/kafka/consumer";
+import Producer from "../../shared/kafka/producer";
 
 
 const config: ServiceConfig = {
@@ -19,6 +19,7 @@ const config: ServiceConfig = {
       topics: ['latent-generation'],
       fromBeginning: false
     },
+    groupId: 'vision-middleware-units'
   }
 }
 
