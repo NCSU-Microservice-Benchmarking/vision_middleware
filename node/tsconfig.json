@@ -1,0 +1,27 @@
+{ 
+  "compilerOptions":{
+    "target": "esnext",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "moduleResolution": "Node",
+    "sourceMap": true,
+    "jsx": "preserve",
+    "strict": false,
+    "outDir": "./dist",
+    "resolveJsonModule": true
+  },
+  "include":[ 
+    "./shared/types/*.d.ts", 
+  ],
+  "exclude":[ 
+    "./node_modules",
+    "./build/**/*"
+  ],
+  "typeRoots": [
+    "./shared/types",
+    "node_modules/@types"
+  ],
+}

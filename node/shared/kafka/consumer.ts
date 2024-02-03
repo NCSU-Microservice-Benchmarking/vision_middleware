@@ -4,17 +4,18 @@ import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, K
 class Consumer {
   
   private consumer: KafkaConsumer
-  private messageProcessor: any
+  private topic: ConsumerSubscribeTopics;
+  //private messageProcessor: any
 
   constructor(options?: any, messageProcessor?: any) {
-    //this.messageProcessor = messageProcessor
+    this.topic = options.topic;
     this.consumer = this.create(options);
   }
 
   public async start(): Promise<void> {
 
     try {
-      await this.consumer.connect();
+      await this.subscribe();
       await this.consumer.run({
         eachMessage: async (messagePayload: EachMessagePayload) => {
           const { topic, partition, message } = messagePayload
@@ -28,9 +29,9 @@ class Consumer {
     }
   }
 
-  public async subscribe(topic: ConsumerSubscribeTopics): Promise<void> {
+  public async subscribe(): Promise<void> {
     try {
-      await this.consumer.subscribe(topic);
+      await this.consumer.subscribe(this.topic);
     } catch (error) {
       console.log('Error: ', error)
     }
@@ -63,14 +64,14 @@ class Consumer {
     await this.consumer.disconnect();
   }
 
-  private create(options): KafkaConsumer {
-    const { brokers, clientId, groupId } = options
+  private create(options: any): KafkaConsumer {
+    const { brokers, clientId, groupId, topic } = options;
     const kafka = new Kafka({ 
       clientId: clientId,
       brokers: brokers
     })
     const consumer = kafka.consumer({ groupId: groupId ? groupId : 'consumer-group' });
-    consumer.on('consumer.connect', async () => {console.log('consumer connected')})
+    consumer.on('consumer.connect', async () => {console.log(`${topic.topics[0]} consumer connected.`)})
     return consumer;
   }
 }

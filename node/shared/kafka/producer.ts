@@ -3,10 +3,13 @@ import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages
 interface CustomMessageFormat { a: string }
 
 class Producer {
-  private producer: KafkaProducer
 
-  constructor() {
-    this.producer = this.create();
+  private producer: KafkaProducer
+  private topic: any
+
+  constructor(options?: any) {
+    this.producer = this.create(options);
+    this.topic = options.topic;
   }
 
   public async start(): Promise<void> {
@@ -21,6 +24,17 @@ class Producer {
     await this.producer.disconnect()
   }
 
+  public async send(message: CustomMessageFormat, topic: string): Promise<void> {
+    const kafkaMessage: Message = {
+      value: JSON.stringify(message),
+    };
+
+    await this.producer.send({
+      topic: this.topic,
+      messages: [kafkaMessage],
+    });
+  }
+
   public async sendBatch(messages: Array<CustomMessageFormat>): Promise<void> {
     const kafkaMessages: Array<Message> = messages.map((message) => {
       return {
@@ -29,7 +43,7 @@ class Producer {
     })
 
     const topicMessages: TopicMessages = {
-      topic: 'producer-topic',
+      topic: this.topic,
       messages: kafkaMessages
     }
 
@@ -40,13 +54,15 @@ class Producer {
     await this.producer.sendBatch(batch)
   }
 
-  private create() : KafkaProducer {
-    const kafka = new Kafka({
-      clientId: 'producer-client',
-      brokers: ['localhost:9092'],
+  private create(options: any) : KafkaProducer {
+    const { brokers, clientId, groupId, topic } = options;
+    const kafka = new Kafka({ 
+      clientId: clientId,
+      brokers: brokers
     })
-
-    return kafka.producer();
+    const producer = kafka.producer();
+    producer.on('producer.connect', async () => {console.log(`${topic.topics[0]} producer connected.`)})
+    return producer;
   }
 }
 
