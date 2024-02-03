@@ -65,7 +65,9 @@ class Consumer {
   }
 
   private create(options: any): KafkaConsumer {
+
     const { brokers, clientId, groupId, topic } = options;
+    
     const kafka = new Kafka({ 
       clientId: clientId,
       brokers: brokers
@@ -74,8 +76,12 @@ class Consumer {
     const config: ConsumerConfig = {
       groupId: groupId
     }
+
     const consumer = kafka.consumer(config);
-    consumer.on('consumer.connect', async () => {console.log(`${topic.topics[0]} consumer connected.`)})
+    consumer.on('consumer.connect', async () => {
+      console.log(`${topic.topics[0]} consumer connected.`)
+    });
+
     return consumer;
   }
 }
