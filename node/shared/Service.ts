@@ -5,12 +5,12 @@ import fs from 'file-system';
 import cors from 'cors';
 import path from 'path';
 
-import type { ServiceConfig, ServiceMetadata } from '../shared/types/service.d.ts';
+import type { Service as Microservice } from '../shared/types/service.d.ts';
 import redisClient from './redis/client';
 
 export default class Service {
 
-  public metadata: ServiceMetadata;
+  public metadata: Microservice.Metadata;
 
   // express server
   private app: Application;
@@ -22,7 +22,7 @@ export default class Service {
   private producer: any; 
   private consumer: any;
   
-  constructor(config: ServiceConfig, metadata: ServiceMetadata) {
+  constructor(config: Microservice.Config, metadata: Microservice.Metadata) {
 
     const { port, router, kafka } = config;
     
@@ -81,7 +81,7 @@ export default class Service {
     }
   }
 
-  public createServer(options: ServiceConfig): void {
+  public createServer(options: Microservice.Config): void {
     const { ssl } = options;
     if (ssl && process.env.NODE_ENV !== "production" && process.env.DOCKER !== 'true') {
       const httpsOptions: https.ServerOptions = {

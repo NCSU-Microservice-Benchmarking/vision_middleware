@@ -1,8 +1,11 @@
+import { Service as Microservice } from '../../shared/types/service';
 import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages, ProducerConfig } from 'kafkajs'
 
-interface CustomMessageFormat { a: string }
+interface CustomMessageFormat { 
+  a: string 
+}
 
-class Producer {
+class Producer implements Microservice.Producer {
 
   private producer: KafkaProducer
   private topic: any
@@ -24,7 +27,7 @@ class Producer {
     await this.producer.disconnect()
   }
 
-  public async send(message: CustomMessageFormat, topic: string): Promise<void> {
+  public async send(message: CustomMessageFormat): Promise<void> {
     const kafkaMessage: Message = {
       value: JSON.stringify(message),
     };

@@ -1,4 +1,4 @@
-import { ServiceConfig, ServiceMetadata } from "../../shared/types/service";
+import { Service as Microservice } from "../../shared/types/service";
 import Service from "../../shared/Service";
 
 import router from "./router";
@@ -6,8 +6,7 @@ import router from "./router";
 import Consumer from "../../shared/kafka/consumer";
 import Producer from "../../shared/kafka/producer";
 
-
-const config: ServiceConfig = {
+const config: Microservice.Config = {
   port: 8081,
   router: router,
   kafka: {
@@ -23,14 +22,14 @@ const config: ServiceConfig = {
   }
 }
 
-const metadata: ServiceMetadata = {
+const metadata: Microservice.Metadata = {
   id: '0001',
   name: 'Pose-Estimation'
 }
 
 const poseService = new Service(config, metadata);
 
-(async function () { 
+(async function main() { 
   try {
     await poseService.start(); 
   } catch (error) {
@@ -38,5 +37,3 @@ const poseService = new Service(config, metadata);
   }
   return;
 })();
-
-export default poseService;

@@ -1,7 +1,7 @@
-
+import { Service as Microservice } from '../../shared/types/service';
 import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload, ConsumerConfig } from 'kafkajs'
 
-export default class Consumer {
+class Consumer implements Microservice.Consumer {
   
   private consumer: KafkaConsumer
   private topic: ConsumerSubscribeTopics;
@@ -85,3 +85,5 @@ export default class Consumer {
   }
 
 }
+
+export default Consumer;

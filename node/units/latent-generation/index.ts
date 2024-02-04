@@ -1,12 +1,12 @@
-import { ServiceConfig, ServiceMetadata } from "../../shared/types/service";
+import { Service as Microservice } from "../../shared/types/service";
 import Service from "../../shared/Service";
 
 import router from "./router";
 
-import Consumer from "../../shared/kafka/consumer";
-import Producer from "../../shared/kafka/producer";
+import Consumer from "../../shared/kafka/consumer_";
+import Producer from "../../shared/kafka/producer_";
 
-const config: ServiceConfig = {
+const config: Microservice.Config = {
   port: 8080,
   router: router,
   kafka: {
@@ -22,14 +22,14 @@ const config: ServiceConfig = {
   }
 }
 
-const metadata: ServiceMetadata = {
+const metadata: Microservice.Metadata = {
   id: '0001',
   name: 'Latent-Generation'
 }
 
 const latentService = new Service(config, metadata);
 
-(async function () { 
+(async function main() { 
   try {
     await latentService.start(); 
   } catch (error) {
@@ -37,5 +37,3 @@ const latentService = new Service(config, metadata);
   }
   return;
 })();
-
-export default latentService;

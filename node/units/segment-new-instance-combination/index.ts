@@ -1,4 +1,4 @@
-import { ServiceConfig, ServiceMetadata } from "../../shared/types/service";
+import { Service as Microservice } from "../../shared/types/service";
 import Service from "../../shared/Service";
 
 import router from "./router";
@@ -7,7 +7,7 @@ import Consumer from "../../shared/kafka/consumer";
 import Producer from "../../shared/kafka/producer";
 
 
-const config: ServiceConfig = {
+const config: Microservice.Config = {
   port: 8082,
   router: router,
   kafka: {
@@ -23,14 +23,14 @@ const config: ServiceConfig = {
   }
 }
 
-const metadata: ServiceMetadata = {
+const metadata: Microservice.Metadata = {
   id: '0001',
   name: 'Segment-Combination'
 }
 
 const segmentService = new Service(config, metadata);
 
-(async function () { 
+(async function main() { 
   try {
     await segmentService.start(); 
   } catch (error) {
@@ -38,6 +38,3 @@ const segmentService = new Service(config, metadata);
   }
   return;
 })();
-
-
-export default segmentService;
