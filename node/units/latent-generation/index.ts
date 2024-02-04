@@ -6,7 +6,6 @@ import router from "./router";
 import Consumer from "../../shared/kafka/consumer";
 import Producer from "../../shared/kafka/producer";
 
-
 const config: ServiceConfig = {
   port: 8080,
   router: router,
@@ -29,4 +28,14 @@ const metadata: ServiceMetadata = {
 }
 
 const latentService = new Service(config, metadata);
+
+(async function () { 
+  try {
+    await latentService.start(); 
+  } catch (error) {
+    console.error(error);
+  }
+  return;
+})();
+
 export default latentService;

@@ -1,13 +1,12 @@
 
 import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload, ConsumerConfig } from 'kafkajs'
 
-class Consumer {
+export default class Consumer {
   
   private consumer: KafkaConsumer
   private topic: ConsumerSubscribeTopics;
-  //private messageProcessor: any
 
-  constructor(options?: any, messageProcessor?: any) {
+  constructor(options?: any) {
     this.topic = options.topic;
     this.consumer = this.create(options);
   }
@@ -39,7 +38,7 @@ class Consumer {
 
   public async startBatch(): Promise<void> {
     const topic: ConsumerSubscribeTopics = {
-      topics: ['example-topic'],
+      topics: this.topic.topics,
       fromBeginning: false
     }
 
@@ -84,6 +83,5 @@ class Consumer {
 
     return consumer;
   }
-}
 
-export default Consumer;
+}

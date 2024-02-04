@@ -29,4 +29,15 @@ const metadata: ServiceMetadata = {
 }
 
 const segmentService = new Service(config, metadata);
+
+(async function () { 
+  try {
+    await segmentService.start(); 
+  } catch (error) {
+    console.error(error);
+  }
+  return;
+})();
+
+
 export default segmentService;

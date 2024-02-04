@@ -55,7 +55,8 @@ class Producer {
   }
 
   private create(options: any) : KafkaProducer {
-    const { brokers, clientId, groupId, topic } = options;
+
+    const { brokers, clientId, topic } = options;
     
     const kafka = new Kafka({ 
       clientId: clientId,
@@ -63,8 +64,9 @@ class Producer {
     })
 
     const config: ProducerConfig = {
-     
+      
     }
+
     const producer = kafka.producer(config);
     producer.on('producer.connect', async () => {console.log(`${topic.topics[0]} producer connected.`)})
     return producer;

@@ -6,6 +6,7 @@ import cors from 'cors';
 import path from 'path';
 
 import type { ServiceConfig, ServiceMetadata } from '../shared/types/service.d.ts';
+import redisClient from './redis/client';
 
 export default class Service {
 
@@ -24,7 +25,7 @@ export default class Service {
   constructor(config: ServiceConfig, metadata: ServiceMetadata) {
 
     const { port, router, kafka } = config;
-
+    
     this.app = express();
     this.port = port;
     this.router = router;
@@ -33,6 +34,7 @@ export default class Service {
     this.configureMiddlewares();
     this.configureRoutes();
     this.configureKafka(kafka);
+    this.configureRedis();
     this.createServer(config);
   }
 
@@ -69,6 +71,16 @@ export default class Service {
     this.consumer = new consumer(options);
   }
 
+  private async configureRedis() {
+    try {
+      // Start Redis Client
+      await redisClient.connect(); 
+      return;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   public createServer(options: ServiceConfig): void {
     const { ssl } = options;
     if (ssl && process.env.NODE_ENV !== "production" && process.env.DOCKER !== 'true') {
@@ -82,30 +94,37 @@ export default class Service {
     }
   }
   
-  public start(): void {
-    // start express server
-    this.server.listen(this.port, () => {
-      console.log(`${this.metadata.name} service listening on port ${this.port}`);
-    });
-    
-    // start kafka
-    const run = async () => {
+  public async start(): Promise<void> {
+    try {
+
+      // start express server
+      this.server.listen(this.port, () => {
+        console.log(`${this.metadata.name} service listening on port ${this.port}`);
+      });
+
+      // start kafka
       await this.producer.start();
       await this.consumer.start();
-    };
-    run().catch(console.error);
+
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  public stop(): void {
-    // close express server
-    this.server.close();
-  
-    // shutdown kafka
-    const run = async () => {
-      await this.producer.shutdown()
+  public async stop(): Promise<void> {
+    try {
+      // start express server
+      this.server.close(() => {
+        console.log(`${this.metadata.name} service closed on port ${this.port}`);
+      });
+
+      // start kafka
+      await this.producer.shutdown();
       await this.consumer.shutdown();
-    };
-    run().catch(console.error);
+
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 }

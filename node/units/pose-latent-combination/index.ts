@@ -29,4 +29,14 @@ const metadata: ServiceMetadata = {
 }
 
 const poseService = new Service(config, metadata);
+
+(async function () { 
+  try {
+    await poseService.start(); 
+  } catch (error) {
+    console.error(error);
+  }
+  return;
+})();
+
 export default poseService;
