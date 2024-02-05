@@ -1,7 +1,7 @@
 import { Service as Microservice } from '../../shared/types/service';
 import Kafka, { KafkaConsumer as RdKafkaConsumer, ConsumerGlobalConfig, Message } from 'node-rdkafka';
 
-export default class Consumer implements Microservice.Consumer {
+class Consumer implements Microservice.Consumer {
 
   private name: string;
   private consumer: RdKafkaConsumer;
@@ -79,3 +79,5 @@ export default class Consumer implements Microservice.Consumer {
     return consumer;
   }
 }
+
+export default Consumer;
