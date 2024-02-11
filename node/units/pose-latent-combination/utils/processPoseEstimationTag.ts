@@ -1,10 +1,10 @@
-import redisClient from '../../../shared/redis/client';
+import redisClient from '../../../shared/redis/client.ts';
 
 // Define cache keys
 const poseEstimationCacheKey = 'pose_estimation_cache';
 const segmentationMaskCacheKey = 'segmentation_mask_cache';
 
-import type { request } from '../../../shared/types/request.d.ts';
+import type { request } from '../../../shared/types/request';
 
 export default async function processPoseEstimationTag (request: request): Promise<boolean | request> {
   try {

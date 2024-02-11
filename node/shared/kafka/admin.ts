@@ -1,5 +1,5 @@
-import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
-import { Kafka, Admin as KafkaAdmin } from 'kafkajs';
+import { kafkaOptions } from '../types/service';
+import Kafka, { GlobalConfig, IAdminClient, AdminClient as KafkaAdmin } from 'node-rdkafka';
 
 class Admin {
   
@@ -9,27 +9,20 @@ class Admin {
     this.admin = this.create(options);
   }
 
-  private create(options: kafkaOptions) : KafkaAdmin {
+  private create(options: kafkaOptions): KafkaAdmin {
     const { clientId, brokers } = options;
-    const kafka = new Kafka({
-      clientId: clientId,
-      brokers: brokers,
-    })
-    return kafka.admin();
-  }
 
-  public async start(): Promise<void> {
-    try {
-      await this.admin.connect();
-    } catch (error) {
-      console.log('Error connecting the admin: ', error)
-    }
+    const config: GlobalConfig = {
+      'client.id': clientId,
+      'metadata.broker.list': brokers.join(','), // Comma-separated list of broker endpoints
+    };
+    const admin: IAdminClient = Kafka.AdminClient.create(config);
+    return admin;
   }
 
   public async shutdown(): Promise<void> {
-    await this.admin.disconnect()
+    await this.admin.disconnect();
   }
-
 }
 
 export default Admin;

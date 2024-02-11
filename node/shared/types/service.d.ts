@@ -13,7 +13,7 @@ interface kafkaOptions {
     producer?: string
   }
   groupId: string,
-  messageProcessor: any
+  requestProcessor: any
 }
 
 export namespace Service {

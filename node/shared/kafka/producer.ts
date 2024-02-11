@@ -1,15 +1,15 @@
-import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
-import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages, ProducerConfig } from 'kafkajs'
+import { Service as Microservice, kafkaOptions } from '../types/service';
+import Kafka, { Producer as RdKafkaProducer, LibrdKafkaError, ProducerGlobalConfig, TopicConfig } from 'node-rdkafka';
 
-interface CustomMessageFormat { 
-  a: string 
+interface CustomMessageFormat {
+  a: string;
 }
 
 class Producer implements Microservice.Producer {
 
-  private name: string
-  private producer: KafkaProducer
-  private topic: string
+  public name: string;
+  private producer: RdKafkaProducer;
+  private topic: string;
 
   constructor(name: string, options: kafkaOptions) {
     this.name = name;
@@ -19,63 +19,90 @@ class Producer implements Microservice.Producer {
 
   public async start(): Promise<void> {
     try {
-      await this.producer.connect();
+      await new Promise<void>((resolve, reject) => {
+        this.producer.connect({}, (err: LibrdKafkaError) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
     } catch (error) {
-      console.log('Error connecting the producer: ', error)
+      console.error(`Error connecting ${this.name} producer:`, error);
     }
   }
 
   public async shutdown(): Promise<void> {
-    await this.producer.disconnect()
-  }
-
-  public async send(message: CustomMessageFormat, topic?: string): Promise<void> {
-    const kafkaMessage: Message = {
-      value: JSON.stringify(message),
-    };
-
-    await this.producer.send({
-      topic: topic ? topic : this.topic,
-      messages: [kafkaMessage],
+    return new Promise<void>((resolve, reject) => {
+      this.producer.disconnect((err: Error) => {
+        if (err) {
+          console.error(`Error disconnecting ${this.name} producer:`, err);
+          reject(err);
+        } else {
+          console.log(`${this.name} producer disconnected.`);
+          resolve();
+        }
+      });
     });
   }
 
-  public async sendBatch(messages: Array<CustomMessageFormat>): Promise<void> {
-    const kafkaMessages: Array<Message> = messages.map((message) => {
-      return {
-        value: JSON.stringify(message)
-      }
-    })
-
-    const topicMessages: TopicMessages = {
-      topic: this.topic,
-      messages: kafkaMessages
-    }
-
-    const batch: ProducerBatch = {
-      topicMessages: [topicMessages]
-    }
-
-    await this.producer.sendBatch(batch);
+  public async send(message: CustomMessageFormat): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+      this.producer.produce(
+        this.topic,
+        null,
+        Buffer.from(JSON.stringify(message)),
+        null,
+        Date.now(),
+        (err: LibrdKafkaError, offset: any) => {
+          if (err) {
+            console.error(`Error sending message from ${this.name} producer:`, err);
+            reject(err);
+          } else {
+            console.log(`Message sent to ${this.name} at offset ${offset}`);
+            resolve();
+          }
+        }
+      );
+    });
   }
 
-  private create(options: kafkaOptions) : KafkaProducer {
-
-    const { brokers, clientId, topics } = options;
-    
-    const kafka = new Kafka({ 
-      clientId: clientId,
-      brokers: brokers
-    })
-
-    const config: ProducerConfig = {
-      
-    }
-
-    const producer = kafka.producer(config);
-    producer.on('producer.connect', async () => {console.log(`${this.name} producer connected.`)})
+  private addEventListeners(producer: RdKafkaProducer): RdKafkaProducer {
+    // set event listeners
+    producer
+      .on('ready', () => {
+        console.log(`${this.name} producer connected.`);
+      })
+      .on('event.error', (err: LibrdKafkaError) => {
+        console.error(`Error in ${this.name} producer:`, err);
+      })
+      .on('connection.failure', (err: LibrdKafkaError) => {
+        console.error(`Connection failure in ${this.name} producer:`, err);
+      });
     return producer;
   }
+
+  private create(options: any): RdKafkaProducer {
+    const { brokers, clientId } = options;
+
+    const producerOptions: ProducerGlobalConfig = {
+      "client.id": clientId,
+      "metadata.broker.list": brokers[0],
+      'message.send.max.retries': 10,
+      'socket.keepalive.enable': true,
+      'queue.buffering.max.messages': 100000,
+      'queue.buffering.max.ms': 1000,
+      'batch.num.messages': 1000000,
+    };
+
+    const producer = this.addEventListeners(new Kafka.Producer(producerOptions));
+    
+    producer.setPollInterval(100);
+
+    return producer;
+  }
+
 }
 
 export default Producer;

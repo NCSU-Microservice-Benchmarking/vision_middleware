@@ -6,3 +6,5 @@ export interface request {
   poseEstimationTag?: any,
   segmentationMask?: any
 }
+
+export type requestProcessor = (request: request) => Promise<boolean | request>

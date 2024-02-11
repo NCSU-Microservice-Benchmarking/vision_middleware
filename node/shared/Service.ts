@@ -8,8 +8,8 @@ import path from 'path';
 import type { Service as Microservice } from '../shared/types/service.d.ts';
 import redisClient from './redis/client';
 
-import Producer from './kafka/producer_';
-import Consumer from './kafka/consumer_'
+import Producer from './kafka/producer';
+import Consumer from './kafka/consumer'
 
 export default class Service {
 
@@ -22,8 +22,8 @@ export default class Service {
   private server: http.Server | https.Server;
 
   // kafka
-  private producer: any; 
-  private consumer: any;
+  private producer: Producer; 
+  private consumer: Consumer;
   
   constructor(config: Microservice.Config, metadata: Microservice.Metadata) {
 
@@ -76,6 +76,7 @@ export default class Service {
     try {
       // Start Redis Client
       await redisClient.connect(); 
+      console.log(`${this.metadata.name} connected to Redis server successfully.`);
       return;
     } catch (error) {
       console.error(error);
@@ -123,6 +124,10 @@ export default class Service {
       if (this.producer) await this.producer.shutdown();
       await this.consumer.shutdown();
 
+      // stop redis
+      await redisClient.disconnect();
+
+      return;
     } catch (error) {
       console.log(error);
     }

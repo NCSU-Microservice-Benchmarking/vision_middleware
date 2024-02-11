@@ -12,26 +12,27 @@ const config: Microservice.Config = {
     clientId: process.env.KAFKA_CLIENT_ID!,
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
-      consumer: 'segment-bombination',
+      consumer: 'segment-combination',
       producer: 'instance-replacement'
     },
     groupId: 'vision-middleware-units',
-    messageProcessor: () => {}
+    requestProcessor: () => {}
   }
 }
 
 const metadata: Microservice.Metadata = {
   id: '0001',
-  name: 'Segment-Combination'
+  name: 'Segment-New-Instance-Combination'
 }
 
 const segmentService = new Service(config, metadata);
 
 (async function main() { 
   try {
-    await segmentService.start(); 
+    await segmentService.start();
+    return 0; 
   } catch (error) {
     console.error(error);
+    return 1;
   }
-  return;
 })();

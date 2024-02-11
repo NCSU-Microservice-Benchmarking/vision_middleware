@@ -1,94 +1,110 @@
-import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
-import Kafka, { KafkaConsumer as RdKafkaConsumer, ConsumerGlobalConfig, Message } from 'node-rdkafka';
-
-import { request } from '../types/request';
+import { Service as Microservice, kafkaOptions } from '../types/service';
+import { request, requestProcessor } from '../types/request';
+import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload, ConsumerConfig } from 'kafkajs'
 
 class Consumer implements Microservice.Consumer {
-
+  
   private name: string;
-  private consumer: RdKafkaConsumer;
+  private consumer: KafkaConsumer;
   private topic: string;
-  private messageProcessor: any;
+  private requestProcessor: requestProcessor;
 
   private producerCallback?: (topic: string, message: any) => Promise<void>;
   private producerTopic?: string;
 
   constructor(name: string, options: kafkaOptions, producerCallback: any) {
-    const { topics, messageProcessor } = options;
+    const { topics, requestProcessor } = options;
     this.name = name;
     this.topic = topics.consumer;
     this.consumer = this.create(options);
     if (topics.producer) {
       this.producerCallback = producerCallback;
-      this.producerTopic = topics.producer
+      this.producerTopic = topics.producer;
     }
-    this.messageProcessor = messageProcessor;
+    this.requestProcessor = this.requestProcessor;
   }
 
   public async start(): Promise<void> {
     try {
-      this.consumer.connect({}, async () => {
-        await this.subscribe();
-        this.consumer.consume();
+      await this.subscribe();
+      await this.consumer.run({
+        eachMessage: async (messagePayload: EachMessagePayload) => {
+          await this.handleMessage(messagePayload);
+          return;
+        }
       });
+
     } catch (error) {
-      console.log('Error: ', error);
+      console.log('Error: ', error)
     }
   }
 
   public async subscribe(): Promise<void> {
     try {
-      this.consumer.subscribe([this.topic]);
+      const topic: ConsumerSubscribeTopics = {
+        topics: [this.topic],
+        fromBeginning: false
+      }
+      await this.consumer.subscribe(topic);
     } catch (error) {
-      console.log('Error: ', error);
+      console.log('Error: ', error)
     }
   }
 
-  private async handleMessage(message: any): Promise<void> {
+  private async handleMessage(messagePayload: EachMessagePayload): Promise<void> {
     try {
+
+      // log message
+      const { topic, partition, message } = messagePayload;
+      const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
+      console.log(`- ${prefix} ${message.key}#${message.value}`);
+
+      // parse message for params
+      const request: request = JSON.parse(message.value!.toString());
+
       // get a response
-      const handled: boolean | request = await this.messageProcessor(message);
-      // produce the message to the correct topic if it wasn't just handled by cache
-      if (this.producerTopic && handled !== true) 
-        await this.producerCallback!(this.producerTopic, handled);
+      const response: boolean | request = await this.requestProcessor(request);
+
+      // produce the message to the correct topic if it wasn't just handled by cache (that would return true)
+      response && this.producerTopic && response !== true &&
+        await this.producerCallback!(this.producerTopic, response);
       return;
+
     } catch (error) {
       console.error('Error handling message:', error);
+      return;
     }
   }
 
   public async shutdown(): Promise<void> {
-    await new Promise(() => this.consumer.unsubscribe());
-    await new Promise((resolve) => this.consumer.disconnect(resolve));
+    await this.consumer.disconnect();
   }
 
-  private create(options: any): RdKafkaConsumer {
-
-    const { brokers, clientId, groupId } = options;
-
-    const config: ConsumerGlobalConfig = {
-      'metadata.broker.list': brokers[0],
-      'group.id': groupId,
-      'client.id': clientId,
-    };
-
-    const consumer = new Kafka.KafkaConsumer(config, {});
-
-    consumer
-      .on('ready', () => {
-        console.log(`${this.name} consumer connected.`);
-      })
-      .on('data', async (messagePayload: Kafka.Message) => {
-        const { topic, partition, value, offset, key, timestamp } = messagePayload;
-        const prefix = `${topic}[${partition} | ${offset}] / ${timestamp}`
-        console.log(`- ${prefix} ${key}#${value}`);
-        //parse message for params
-        const request = JSON.parse(value!.toString());
-        await this.handleMessage(request);
-      });
-
+  private addEventListeners(consumer: KafkaConsumer): KafkaConsumer {
+    consumer.on('consumer.connect', async () => {
+      console.log(`${this.name} consumer connected.`)
+    })
     return consumer;
   }
+
+  private create(options: kafkaOptions): KafkaConsumer {
+
+    const { brokers, clientId, groupId } = options;
+    
+    const kafka = new Kafka({ 
+      clientId: clientId,
+      brokers: brokers
+    });
+
+    const config: ConsumerConfig = {
+      groupId: groupId
+    }
+
+    const consumer = this.addEventListeners(kafka.consumer(config));
+    
+    return consumer;
+  }
+
 }
 
 export default Consumer;

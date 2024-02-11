@@ -1,5 +1,5 @@
-import processPoseEstimationTag from './poseEstimationTag';
-import processSegmentationBinaryMask from './segementationBinaryMask';
+import processPoseEstimationTag from './processPoseEstimationTag.ts';
+import processSegmentationBinaryMask from './processSegementationBinaryMask';
 
 import type { request } from '../../../shared/types/request.d.ts';
 
@@ -17,7 +17,7 @@ export default async function handlePoseRequest(request: request): Promise<boole
       return Promise.reject();
     }
     
-    return Promise.resolve(response);
+    return response;
 
   } catch (error) {
     return Promise.reject(error);

@@ -17,22 +17,23 @@ const config: Microservice.Config = {
       producer: 'instance-replacement'
     },
     groupId: 'vision-middleware-units',
-    messageProcessor: handlePoseRequest
+    requestProcessor: handlePoseRequest
   }
 }
 
 const metadata: Microservice.Metadata = {
   id: '0001',
-  name: 'Pose-Estimation'
+  name: 'Pose-Latent-Combination'
 }
 
 const poseService = new Service(config, metadata);
 
 (async function main() { 
   try {
-    await poseService.start(); 
+    await poseService.start();
+    return 0; 
   } catch (error) {
     console.error(error);
+    return 1;
   }
-  return;
 })();

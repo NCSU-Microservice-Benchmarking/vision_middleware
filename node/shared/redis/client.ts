@@ -9,7 +9,7 @@ const clientOptions: RedisClientOptions = {
 };
 const redisClient: ReturnType<typeof createClient> = createClient(clientOptions);
 
-redisClient.on("ready", () => console.log("Connected to Redis server successfully."));
+//redisClient.on("ready", () => console.log("Connected to Redis server successfully."));
 redisClient.on('error', (err) => console.log('Redis Client Error.', err));
 
 export default redisClient;

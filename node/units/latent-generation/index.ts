@@ -17,7 +17,7 @@ const config: Microservice.Config = {
       consumer: 'latent-generation'
     },
     groupId: 'vision-middleware-units',
-    messageProcessor: handleLatentRequest,
+    requestProcessor: handleLatentRequest,
   }
 }
 
@@ -31,9 +31,10 @@ const latentService = new Service(config, metadata);
 
 (async function main() { 
   try {
-    await latentService.start(); 
+    await latentService.start();
+    return 0; 
   } catch (error) {
     console.error(error);
+    return 1;
   }
-  return;
 })();
