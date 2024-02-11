@@ -3,22 +3,19 @@ import Service from "../../shared/Service";
 
 import router from "./router";
 
-import Consumer from "../../shared/kafka/consumer_";
-import Producer from "../../shared/kafka/producer_";
+import generateLatent from './utils/generateLatent';
 
 const config: Microservice.Config = {
   port: 8080,
   router: router,
-  kafka: {
+  kafkaOptions: {
     clientId: 'kafka',
     brokers: ['localhost:9092'],
-    producer: Producer,
-    consumer: Consumer,
-    topic: {
-      topics: ['latent-generation'],
-      fromBeginning: false
+    topics: {
+      consumer: 'latent-generation'
     },
-    groupId: 'vision-middleware-units'
+    groupId: 'vision-middleware-units',
+    messageProcessor: generateLatent,
   }
 }
 
@@ -28,6 +25,7 @@ const metadata: Microservice.Metadata = {
 }
 
 const latentService = new Service(config, metadata);
+
 
 (async function main() { 
   try {

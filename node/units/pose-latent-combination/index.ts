@@ -3,22 +3,18 @@ import Service from "../../shared/Service";
 
 import router from "./router";
 
-import Consumer from "../../shared/kafka/consumer";
-import Producer from "../../shared/kafka/producer";
-
 const config: Microservice.Config = {
   port: 8081,
   router: router,
-  kafka: {
+  kafkaOptions: {
     clientId: 'kafka',
     brokers: ['localhost:9092'],
-    producer: Producer,
-    consumer: Consumer,
-    topic: {
-      topics: ['pose-estimation'],
-      fromBeginning: false
+    topics: {
+      consumer: 'pose-estimation',
+      producer: 'instance-replacement'
     },
-    groupId: 'vision-middleware-units'
+    groupId: 'vision-middleware-units',
+    messageProcessor: () => {}
   }
 }
 

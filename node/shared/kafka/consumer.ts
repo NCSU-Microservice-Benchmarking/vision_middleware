@@ -1,25 +1,38 @@
-import { Service as Microservice } from '../../shared/types/service';
+import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
 import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, Kafka, EachMessagePayload, ConsumerConfig } from 'kafkajs'
 
 class Consumer implements Microservice.Consumer {
   
+  private name: string;
   private consumer: KafkaConsumer
-  private topic: ConsumerSubscribeTopics;
+  private topic: string;
+  private messageProcessor: any;
 
-  constructor(options?: any) {
-    this.topic = options.topic;
+  private producerCallback?: (topic: string, message: any) => Promise<void>;
+  private producerTopic?: string;
+
+  constructor(name: string, options: kafkaOptions, producerCallback: any) {
+    const { topics, messageProcessor } = options;
+    this.name = name;
+    this.topic = topics.consumer;
     this.consumer = this.create(options);
+    if (topics.producer) {
+      this.producerCallback = producerCallback;
+      this.producerTopic = topics.producer
+    }
+    this.messageProcessor = messageProcessor;
   }
 
   public async start(): Promise<void> {
-
     try {
       await this.subscribe();
       await this.consumer.run({
         eachMessage: async (messagePayload: EachMessagePayload) => {
-          const { topic, partition, message } = messagePayload
+          const { topic, partition, message } = messagePayload;
           const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
-          console.log(`- ${prefix} ${message.key}#${message.value}`)
+          console.log(`- ${prefix} ${message.key}#${message.value}`);
+          //parse message for params
+          await this.handleMessage(message);
         }
       });
 
@@ -30,32 +43,26 @@ class Consumer implements Microservice.Consumer {
 
   public async subscribe(): Promise<void> {
     try {
-      await this.consumer.subscribe(this.topic);
+      const topic: ConsumerSubscribeTopics = {
+        topics: [this.topic],
+        fromBeginning: false
+      }
+      await this.consumer.subscribe(topic);
     } catch (error) {
       console.log('Error: ', error)
     }
   }
 
-  public async startBatch(): Promise<void> {
-    const topic: ConsumerSubscribeTopics = {
-      topics: this.topic.topics,
-      fromBeginning: false
-    }
-
+  private async handleMessage(message: any): Promise<void> {
     try {
-      await this.consumer.connect()
-      await this.consumer.subscribe(topic)
-      await this.consumer.run({
-        eachBatch: async (eachBatchPayload: EachBatchPayload) => {
-          const { batch } = eachBatchPayload
-          for (const message of batch.messages) {
-            const prefix = `${batch.topic}[${batch.partition} | ${message.offset}] / ${message.timestamp}`
-            console.log(`- ${prefix} ${message.key}#${message.value}`) 
-          }
-        }
-      })
+      // get a response
+      const handled = await this.messageProcessor(message);
+      // produce the message to the correct topic if it wasn't just handled by cache
+      if (this.producerTopic && handled !== true) 
+        await this.producerCallback!(this.producerTopic, handled);
+      return;
     } catch (error) {
-      console.log('Error: ', error)
+      console.error('Error handling message:', error);
     }
   }
 
@@ -63,9 +70,9 @@ class Consumer implements Microservice.Consumer {
     await this.consumer.disconnect();
   }
 
-  private create(options: any): KafkaConsumer {
+  private create(options: kafkaOptions): KafkaConsumer {
 
-    const { brokers, clientId, groupId, topic } = options;
+    const { brokers, clientId, groupId, topics } = options;
     
     const kafka = new Kafka({ 
       clientId: clientId,
@@ -78,7 +85,7 @@ class Consumer implements Microservice.Consumer {
 
     const consumer = kafka.consumer(config);
     consumer.on('consumer.connect', async () => {
-      console.log(`${topic.topics[0]} consumer connected.`)
+      console.log(`${this.name} consumer connected.`)
     });
 
     return consumer;

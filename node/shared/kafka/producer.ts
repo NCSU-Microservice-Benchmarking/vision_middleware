@@ -1,4 +1,4 @@
-import { Service as Microservice } from '../../shared/types/service';
+import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
 import { Kafka, Message, Producer as KafkaProducer, ProducerBatch, TopicMessages, ProducerConfig } from 'kafkajs'
 
 interface CustomMessageFormat { 
@@ -7,12 +7,14 @@ interface CustomMessageFormat {
 
 class Producer implements Microservice.Producer {
 
+  private name: string
   private producer: KafkaProducer
-  private topic: any
+  private topic: string
 
-  constructor(options?: any) {
+  constructor(name: string, options: kafkaOptions) {
+    this.name = name;
     this.producer = this.create(options);
-    this.topic = options.topic;
+    if (options.topics.producer) this.topic = options.topics.producer;
   }
 
   public async start(): Promise<void> {
@@ -27,13 +29,13 @@ class Producer implements Microservice.Producer {
     await this.producer.disconnect()
   }
 
-  public async send(message: CustomMessageFormat): Promise<void> {
+  public async send(message: CustomMessageFormat, topic?: string): Promise<void> {
     const kafkaMessage: Message = {
       value: JSON.stringify(message),
     };
 
     await this.producer.send({
-      topic: this.topic,
+      topic: topic ? topic : this.topic,
       messages: [kafkaMessage],
     });
   }
@@ -57,9 +59,9 @@ class Producer implements Microservice.Producer {
     await this.producer.sendBatch(batch)
   }
 
-  private create(options: any) : KafkaProducer {
+  private create(options: kafkaOptions) : KafkaProducer {
 
-    const { brokers, clientId, topic } = options;
+    const { brokers, clientId, topics } = options;
     
     const kafka = new Kafka({ 
       clientId: clientId,
@@ -71,7 +73,7 @@ class Producer implements Microservice.Producer {
     }
 
     const producer = kafka.producer(config);
-    producer.on('producer.connect', async () => {console.log(`${topic.topics[0]} producer connected.`)})
+    producer.on('producer.connect', async () => {console.log(`${this.name} producer connected.`)})
     return producer;
   }
 }

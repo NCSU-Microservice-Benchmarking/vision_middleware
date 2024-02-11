@@ -8,13 +8,12 @@ interface ssl {
 interface kafkaOptions {
   clientId: string,
   brokers: string[],
-  producer: typeof Producer,
-  consumer: typeof Consumer,
-  topic: {
-    topics: string[],
-    fromBeginning?: boolean
-  },
-  groupId: string
+  topics: {
+    consumer: string,
+    producer?: string
+  }
+  groupId: string,
+  messageProcessor: any
 }
 
 export namespace Service {
@@ -22,7 +21,7 @@ export namespace Service {
   export interface Config {
     port: number,
     router: Router
-    kafka: kafkaOptions
+    kafkaOptions: kafkaOptions
     ssl?: any
   }
   

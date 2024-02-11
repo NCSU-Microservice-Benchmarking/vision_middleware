@@ -8,6 +8,9 @@ import path from 'path';
 import type { Service as Microservice } from '../shared/types/service.d.ts';
 import redisClient from './redis/client';
 
+import Producer from './kafka/producer';
+import Consumer from './kafka/consumer'
+
 export default class Service {
 
   public metadata: Microservice.Metadata;
@@ -24,7 +27,7 @@ export default class Service {
   
   constructor(config: Microservice.Config, metadata: Microservice.Metadata) {
 
-    const { port, router, kafka } = config;
+    const { port, router, kafkaOptions } = config;
     
     this.app = express();
     this.port = port;
@@ -33,7 +36,7 @@ export default class Service {
 
     this.configureMiddlewares();
     this.configureRoutes();
-    this.configureKafka(kafka);
+    this.configureKafka(kafkaOptions);
     this.configureRedis();
     this.createServer(config);
   }
@@ -60,15 +63,13 @@ export default class Service {
     this.app.use(router);
   }
 
-  private configureKafka(kafka: any) {
-
-    const { producer, consumer } = kafka;
-
-    let options = kafka;
-    delete options.producer; delete options.consumer;
-
-    this.producer = new producer(options);
-    this.consumer = new consumer(options);
+  private configureKafka(kafkaOptions: Microservice.Config["kafkaOptions"]) {
+    // only create a producer if service requires it
+    if (kafkaOptions.topics.producer) {
+      this.producer = new Producer(this.metadata.name, kafkaOptions);
+    }
+    // pass accesss to the producer to the consumer 
+    this.consumer = new Consumer(this.metadata.name, kafkaOptions, this.producer ? this.producer.send.bind(this) : null);
   }
 
   private async configureRedis() {
@@ -103,7 +104,7 @@ export default class Service {
       });
 
       // start kafka
-      await this.producer.start();
+      if (this.producer) await this.producer.start();
       await this.consumer.start();
 
     } catch (error) {
