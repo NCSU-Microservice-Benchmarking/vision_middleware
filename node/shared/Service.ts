@@ -8,8 +8,8 @@ import path from 'path';
 import type { Service as Microservice } from '../shared/types/service.d.ts';
 import redisClient from './redis/client';
 
-import Producer from './kafka/producer';
-import Consumer from './kafka/consumer'
+import Producer from './kafka/producer_';
+import Consumer from './kafka/consumer_'
 
 export default class Service {
 
@@ -114,13 +114,13 @@ export default class Service {
 
   public async stop(): Promise<void> {
     try {
-      // start express server
+      // stop express server
       this.server.close(() => {
         console.log(`${this.metadata.name} service closed on port ${this.port}`);
       });
 
-      // start kafka
-      await this.producer.shutdown();
+      // stop kafka
+      if (this.producer) await this.producer.shutdown();
       await this.consumer.shutdown();
 
     } catch (error) {

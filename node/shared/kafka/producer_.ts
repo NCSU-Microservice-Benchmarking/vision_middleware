@@ -1,4 +1,4 @@
-import { Service as Microservice } from '../../shared/types/service';
+import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
 import Kafka, { Producer as RdKafkaProducer, LibrdKafkaError, ProducerGlobalConfig, TopicConfig } from 'node-rdkafka';
 
 interface CustomMessageFormat {
@@ -9,12 +9,12 @@ class Producer implements Microservice.Producer {
 
   public name: string;
   private producer: RdKafkaProducer;
-  private topic: any;
+  private topic: string;
 
-  constructor(options?: any) {
+  constructor(name: string, options: kafkaOptions) {
+    this.name = name;
     this.producer = this.create(options);
-    this.topic = options.topic;
-    this.name = options.topic.topics[0];
+    if (options.topics.producer) this.topic = options.topics.producer;
   }
 
   public async start(): Promise<void> {
@@ -79,7 +79,7 @@ class Producer implements Microservice.Producer {
 
     const producerOptions: ProducerGlobalConfig = {
       "client.id": clientId,
-      "metadata.broker.list": brokers,
+      "metadata.broker.list": brokers[0],
       'message.send.max.retries': 10,
       'socket.keepalive.enable': true,
       'queue.buffering.max.messages': 100000,

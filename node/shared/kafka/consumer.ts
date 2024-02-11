@@ -73,7 +73,7 @@ class Consumer implements Microservice.Consumer {
 
   private create(options: kafkaOptions): KafkaConsumer {
 
-    const { brokers, clientId, groupId, topics } = options;
+    const { brokers, clientId, groupId } = options;
     
     const kafka = new Kafka({ 
       clientId: clientId,
@@ -85,6 +85,8 @@ class Consumer implements Microservice.Consumer {
     }
 
     const consumer = kafka.consumer(config);
+
+    // add events
     consumer.on('consumer.connect', async () => {
       console.log(`${this.name} consumer connected.`)
     });

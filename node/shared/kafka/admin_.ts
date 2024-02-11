@@ -1,5 +1,5 @@
 import { kafkaOptions } from '../../shared/types/service';
-import Kakfa, { GlobalConfig, IAdminClient, AdminClient as KafkaAdmin } from 'node-rdkafka';
+import Kafka, { GlobalConfig, IAdminClient, AdminClient as KafkaAdmin } from 'node-rdkafka';
 
 class Admin {
   
@@ -16,7 +16,7 @@ class Admin {
       'client.id': clientId,
       'metadata.broker.list': brokers.join(','), // Comma-separated list of broker endpoints
     };
-    const admin: IAdminClient = Kakfa.AdminClient.create(config);
+    const admin: IAdminClient = Kafka.AdminClient.create(config);
     return admin;
   }
 

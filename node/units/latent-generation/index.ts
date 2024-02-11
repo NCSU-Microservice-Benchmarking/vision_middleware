@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { Service as Microservice } from "../../shared/types/service";
 import Service from "../../shared/Service";
 
@@ -10,7 +12,7 @@ const config: Microservice.Config = {
   router: router,
   kafkaOptions: {
     clientId: process.env.KAFKA_CLIENT_ID!,
-    brokers: [process.env.KAKFA_BROKER_URL!],
+    brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
       consumer: 'latent-generation'
     },
