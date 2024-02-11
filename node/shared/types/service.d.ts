@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { requestProcessor } from "./request";
 
 interface ssl {
   cert: string,
@@ -13,7 +14,7 @@ interface kafkaOptions {
     producer?: string
   }
   groupId: string,
-  requestProcessor: any
+  requestProcessor: requestProcessor
 }
 
 export namespace Service {

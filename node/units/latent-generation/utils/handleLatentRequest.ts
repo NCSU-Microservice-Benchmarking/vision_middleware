@@ -7,7 +7,7 @@ import generateRandomImage from './generateRandomImage';
 
 import type { request } from '../../../shared/types/request.d.ts';
 
-export default async function generateLatent(request: request): Promise<void> {
+export default async function generateLatent(request: request): Promise<boolean | request > {
   try {
     const { videoUUID, frameNumber, instanceID } = request;
     const key = `${videoUUID}-${instanceID}`;
@@ -20,7 +20,7 @@ export default async function generateLatent(request: request): Promise<void> {
     const value = await client.get(commandOptions(options), key);
     if (value) {
       console.log(`Latent data for ${key} already exists. Skipping.`);
-      return;
+      return true;
     }
 
     // Build a random seed with video UUID and instance ID
@@ -32,7 +32,7 @@ export default async function generateLatent(request: request): Promise<void> {
     // Store the (video UUID, instance ID) - latent pair in Redis
     await client.set(commandOptions(options), key, latentData);
     console.log(`Generated and stored latent data for ${key}`);
-    return;
+    return true;
     
   } catch (error) {
     console.log(`Error generating latent.`, error);
