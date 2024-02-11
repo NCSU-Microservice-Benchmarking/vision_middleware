@@ -56,7 +56,7 @@ class Producer implements Microservice.Producer {
       topicMessages: [topicMessages]
     }
 
-    await this.producer.sendBatch(batch)
+    await this.producer.sendBatch(batch);
   }
 
   private create(options: kafkaOptions) : KafkaProducer {

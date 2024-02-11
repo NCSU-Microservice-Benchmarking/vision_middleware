@@ -5,7 +5,7 @@ class Consumer implements Microservice.Consumer {
 
   private name: string;
   private consumer: RdKafkaConsumer;
-  private topic: any;
+  private topic: string;
   private messageProcessor: any;
 
   private producerCallback?: (topic: string, message: any) => Promise<void>;
@@ -41,25 +41,6 @@ class Consumer implements Microservice.Consumer {
       console.log('Error: ', error);
     }
   }
-
-  /*public async startBatch(): Promise<void> {
-    const consumerRunConfig: ConsumerRunConfig = {
-      eachBatch: async (batch) => {
-        for (const message of batch.messages) {
-          const prefix = `${batch.topic}[${batch.partition} | ${message.offset}] / ${message.timestamp}`;
-          console.log(`- ${prefix} ${message.key}#${message.value}`);
-        }
-      }
-    };
-
-    try {
-      await this.subscribe();
-      this.consumer.consume(consumerRunConfig);
-    } catch (error) {
-      console.log('Error: ', error);
-    }
-  }*/
-
 
   private async handleMessage(message: any): Promise<void> {
     try {

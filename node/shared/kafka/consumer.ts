@@ -4,7 +4,7 @@ import { Consumer as KafkaConsumer, ConsumerSubscribeTopics, EachBatchPayload, K
 class Consumer implements Microservice.Consumer {
   
   private name: string;
-  private consumer: KafkaConsumer
+  private consumer: KafkaConsumer;
   private topic: string;
   private messageProcessor: any;
 

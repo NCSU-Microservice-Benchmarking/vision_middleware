@@ -48,7 +48,7 @@ class Producer implements Microservice.Producer {
   }
 
   public async send(message: CustomMessageFormat): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       this.producer.produce(
         this.topic,
         null,
@@ -68,14 +68,8 @@ class Producer implements Microservice.Producer {
     });
   }
 
-  // Additional method for sending batches
-  public async sendBatch(messages: Array<CustomMessageFormat>): Promise<void> {
-    // Implement batch sending logic here
-    // Note: The node-rdkafka library doesn't have a direct equivalent for batch sending as in kafkajs
-  }
-
   private create(options: any): RdKafkaProducer {
-    const { brokers, clientId, topic } = options;
+    const { brokers, clientId } = options;
 
     const producerOptions: ProducerGlobalConfig = {
       "client.id": clientId,

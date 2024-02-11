@@ -4,7 +4,9 @@ import redisClient from '../../../shared/redis/client';
 const poseEstimationCacheKey = 'pose_estimation_cache';
 const segmentationMaskCacheKey = 'segmentation_mask_cache';
 
-export default async function processPoseEstimationTag (request: any): Promise<void | Object> {
+import type { request } from '../../../shared/types/request.d.ts';
+
+export default async function processPoseEstimationTag (request: request): Promise<void | Object> {
   try {
     const { videoUUID, frameNumber, instanceID, poseEstimationTag } = request;
     const cacheKey = `${videoUUID}:${frameNumber}:${instanceID}`;

@@ -4,8 +4,10 @@ import redisClient from '../../../shared/redis/client';
 const poseEstimationCacheKey = 'pose_estimation_cache';
 const segmentationMaskCacheKey = 'segmentation_mask_cache';
 
+import type { request } from '../../../shared/types/request.d.ts';
+
 // Message processing function for segmentation binary mask requests
-export default async function processSegmentationBinaryMask (request: any) {
+export default async function processSegmentationBinaryMask (request: request) {
   try {
     const { videoUUID, frameNumber, instanceID, segmentationMask } = request;
     const cacheKey = `${videoUUID}:${frameNumber}:${instanceID}`;

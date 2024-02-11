@@ -5,7 +5,9 @@ import { commandOptions } from 'redis';
 import buildRandomSeed from './buildRandomSeed';
 import generateRandomImage from './generateRandomImage';
 
-export default async function generateLatent(request: any): Promise<void> {
+import type { request } from '../../../shared/types/request.d.ts';
+
+export default async function generateLatent(request: request): Promise<void> {
   try {
     const { videoUUID, frameNumber, instanceID } = request;
     const key = `${videoUUID}-${instanceID}`;
