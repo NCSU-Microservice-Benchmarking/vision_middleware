@@ -32,7 +32,8 @@ class Consumer implements Microservice.Consumer {
           const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
           console.log(`- ${prefix} ${message.key}#${message.value}`);
           //parse message for params
-          await this.handleMessage(message);
+          const request = JSON.parse(message.value!.toString());
+          await this.handleMessage(request);
         }
       });
 
