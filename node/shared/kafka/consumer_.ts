@@ -1,6 +1,8 @@
 import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
 import Kafka, { KafkaConsumer as RdKafkaConsumer, ConsumerGlobalConfig, Message } from 'node-rdkafka';
 
+import { request } from '../types/request';
+
 class Consumer implements Microservice.Consumer {
 
   private name: string;
@@ -45,7 +47,7 @@ class Consumer implements Microservice.Consumer {
   private async handleMessage(message: any): Promise<void> {
     try {
       // get a response
-      const handled = await this.messageProcessor(message);
+      const handled: boolean | request = await this.messageProcessor(message);
       // produce the message to the correct topic if it wasn't just handled by cache
       if (this.producerTopic && handled !== true) 
         await this.producerCallback!(this.producerTopic, handled);

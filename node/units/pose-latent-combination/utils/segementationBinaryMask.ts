@@ -7,7 +7,7 @@ const segmentationMaskCacheKey = 'segmentation_mask_cache';
 import type { request } from '../../../shared/types/request.d.ts';
 
 // Message processing function for segmentation binary mask requests
-export default async function processSegmentationBinaryMask (request: request) {
+export default async function processSegmentationBinaryMask (request: request): Promise<boolean | request> {
   try {
     const { videoUUID, frameNumber, instanceID, segmentationMask } = request;
     const cacheKey = `${videoUUID}:${frameNumber}:${instanceID}`;
@@ -18,22 +18,22 @@ export default async function processSegmentationBinaryMask (request: request) {
     if (!poseEstimationExists) {
       // Store segmentation binary mask in cache if pose estimation tag doesn't exist
       await redisClient.hSet(segmentationMaskCacheKey, cacheKey, segmentationMask);
-      return;
+      return true;
     } else {
       // Combine pose estimation tag and segmentation binary mask for instance synthesis request
       const poseEstimationTag = await redisClient.hGet(poseEstimationCacheKey, cacheKey);
-      const instanceSynthesisRequest = {
-        videoUUID,
-        frameNumber,
-        instanceID,
-        poseEstimationTag,
-        segmentationMask
+      const instanceSynthesisRequest: request = {
+        videoUUID: videoUUID,
+        frameNumber: frameNumber,
+        instanceID: instanceID,
+        poseEstimationTag: poseEstimationTag,
+        segmentationMask: segmentationMask
       };
-      // Put instance synthesis request into the "Instance replacement request queue"
+      // Return instance synthesis request
       return instanceSynthesisRequest;
-      // Your logic here
     }
   } catch (error) {
     console.error('Error processing segmentation binary mask request:', error);
+    throw new Error(error);
   }
 };

@@ -36,6 +36,6 @@ export default async function generateLatent(request: request): Promise<void> {
     
   } catch (error) {
     console.log(`Error generating latent.`, error);
-    return;
+    throw new Error(error);
   }
 }

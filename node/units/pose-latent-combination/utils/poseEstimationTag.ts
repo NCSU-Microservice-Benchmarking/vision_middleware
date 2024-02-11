@@ -6,7 +6,7 @@ const segmentationMaskCacheKey = 'segmentation_mask_cache';
 
 import type { request } from '../../../shared/types/request.d.ts';
 
-export default async function processPoseEstimationTag (request: request): Promise<void | Object> {
+export default async function processPoseEstimationTag (request: request): Promise<boolean | request> {
   try {
     const { videoUUID, frameNumber, instanceID, poseEstimationTag } = request;
     const cacheKey = `${videoUUID}:${frameNumber}:${instanceID}`;
@@ -17,14 +17,14 @@ export default async function processPoseEstimationTag (request: request): Promi
     if (!segmentationMaskExists) {
       // Store pose estimation tag in cache if segmentation binary mask doesn't exist
       await redisClient.hSet(poseEstimationCacheKey, cacheKey, poseEstimationTag);
-      return;
+      return true;
     } else {
       // Combine pose estimation tag and segmentation binary mask for instance synthesis request
       const segmentationMask = await redisClient.hGet(segmentationMaskCacheKey, cacheKey);
-      const instanceSynthesisRequest = {
-        uuid: videoUUID,
+      const instanceSynthesisRequest: request = {
+        videoUUID: videoUUID,
         frameNumber: frameNumber,
-        instanceId: instanceID,
+        instanceID: instanceID,
         poseEstimationTag: poseEstimationTag,
         segmentationMask: segmentationMask
       };
@@ -33,5 +33,6 @@ export default async function processPoseEstimationTag (request: request): Promi
     }
   } catch (error) {
     console.error('Error processing pose estimation tag request:', error);
+    throw new Error(error);
   }
 };
