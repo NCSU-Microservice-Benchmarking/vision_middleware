@@ -5,8 +5,9 @@ import { commandOptions } from 'redis';
 import buildRandomSeed from './buildRandomSeed';
 import generateRandomImage from './generateRandomImage';
 
-export default async function generateLatent(videoUUID: string, frameNumber: number, instanceID: string): Promise<void> {
+export default async function generateLatent(request: any): Promise<void> {
   try {
+    const { videoUUID, frameNumber, instanceID } = request;
     const key = `${videoUUID}-${instanceID}`;
 
     const options: ClientCommandOptions = {

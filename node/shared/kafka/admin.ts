@@ -1,16 +1,19 @@
-import { Kafka, Admin as KafkaAdmin } from 'kafkajs'
+import { Service as Microservice, kafkaOptions } from '../../shared/types/service';
+import { Kafka, Admin as KafkaAdmin } from 'kafkajs';
 
 class Admin {
+  
   private admin: KafkaAdmin
 
-  constructor() {
-    this.admin = this.create();
+  constructor(options: kafkaOptions) {
+    this.admin = this.create(options);
   }
 
-  private create() : KafkaAdmin {
+  private create(options: kafkaOptions) : KafkaAdmin {
+    const { clientId, brokers } = options;
     const kafka = new Kafka({
-      clientId: 'producer-client',
-      brokers: ['localhost:9092'],
+      clientId: clientId,
+      brokers: brokers,
     })
     return kafka.admin();
   }

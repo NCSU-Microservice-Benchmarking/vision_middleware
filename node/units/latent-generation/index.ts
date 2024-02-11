@@ -3,19 +3,19 @@ import Service from "../../shared/Service";
 
 import router from "./router";
 
-import generateLatent from './utils/generateLatent';
+import handleLatentRequest from './utils/handleLatentRequest';
 
 const config: Microservice.Config = {
   port: 8080,
   router: router,
   kafkaOptions: {
-    clientId: 'kafka',
-    brokers: ['localhost:9092'],
+    clientId: process.env.KAFKA_CLIENT_ID!,
+    brokers: [process.env.KAKFA_BROKER_URL!],
     topics: {
       consumer: 'latent-generation'
     },
     groupId: 'vision-middleware-units',
-    messageProcessor: generateLatent,
+    messageProcessor: handleLatentRequest,
   }
 }
 
