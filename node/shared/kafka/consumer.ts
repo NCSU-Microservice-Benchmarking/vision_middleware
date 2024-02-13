@@ -11,10 +11,10 @@ class Consumer implements Microservice.Consumer {
   private topic: string;
   private requestProcessor: requestProcessor;
 
-  private producerCallback?: (topic: string, message: any) => Promise<void>;
+  private producerCallback?: Microservice.Consumer.producerCallback;
   private producerTopic?: string;
 
-  constructor(name: string, options: kafkaOptions, producerCallback: any) {
+  constructor(name: string, options: kafkaOptions, producerCallback: Microservice.Consumer.producerCallback) {
     const { topics, requestProcessor } = options;
     this.name = name;
     this.topic = topics.consumer;
@@ -62,7 +62,7 @@ class Consumer implements Microservice.Consumer {
 
       // produce the message to the correct topic if it wasn't just handled by cache (that would return true)
       response && this.producerTopic && response !== true && 
-        await this.producerCallback!(this.producerTopic, response);
+        await this.producerCallback!(response, this.producerTopic);
       return;
 
     } catch (error) {
@@ -115,6 +115,7 @@ class Consumer implements Microservice.Consumer {
     const consumer = this.addEventListeners(new Kafka.KafkaConsumer(config, {}));
     return consumer;
   }
+  
 }
 
 export default Consumer;

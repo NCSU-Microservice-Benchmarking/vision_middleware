@@ -1,27 +1,27 @@
-import { kafkaOptions } from '../types/service';
-import Kafka, { GlobalConfig, IAdminClient, AdminClient as KafkaAdmin } from 'node-rdkafka';
+import { Service as Microservice, kafkaOptions } from '../types/service';
+import Kafka, { GlobalConfig, IAdminClient as RdKafkaAdmin, AdminClient } from 'node-rdkafka';
 
-class Admin {
+class Admin implements Microservice.Admin {
   
-  private admin: KafkaAdmin
+  private admin: RdKafkaAdmin
 
   constructor(options: kafkaOptions) {
     this.admin = this.create(options);
   }
 
-  private create(options: kafkaOptions): KafkaAdmin {
+  private create(options: kafkaOptions): RdKafkaAdmin {
     const { clientId, brokers } = options;
 
     const config: GlobalConfig = {
       'client.id': clientId,
       'metadata.broker.list': brokers.join(','), // Comma-separated list of broker endpoints
     };
-    const admin: IAdminClient = Kafka.AdminClient.create(config);
+    const admin: RdKafkaAdmin = AdminClient.create(config);
     return admin;
   }
 
   public async shutdown(): Promise<void> {
-    await this.admin.disconnect();
+    this.admin.disconnect();
   }
 }
 

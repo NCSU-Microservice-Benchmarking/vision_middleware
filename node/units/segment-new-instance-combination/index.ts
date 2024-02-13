@@ -5,6 +5,8 @@ import Service from "../../shared/Service";
 
 import router from "./router";
 
+import handleSegmentNewRequest from '../segment-new-instance-combination/utils/handleSegementNewRequest';
+
 const config: Microservice.Config = {
   port: 8082,
   router: router,
@@ -12,11 +14,11 @@ const config: Microservice.Config = {
     clientId: process.env.KAFKA_CLIENT_ID!,
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
-      consumer: 'segment-combination',
+      consumer: 'segment-new-instance-combination',
       producer: 'instance-replacement'
     },
     groupId: 'vision-middleware-units',
-    requestProcessor: () => {}
+    requestProcessor: handleSegmentNewRequest
   }
 }
 
@@ -25,11 +27,11 @@ const metadata: Microservice.Metadata = {
   name: 'Segment-New-Instance-Combination'
 }
 
-const segmentService = new Service(config, metadata);
+const segmentNewService = new Service(config, metadata);
 
 (async function main() { 
   try {
-    await segmentService.start();
+    await segmentNewService.start();
     return 0; 
   } catch (error) {
     console.error(error);

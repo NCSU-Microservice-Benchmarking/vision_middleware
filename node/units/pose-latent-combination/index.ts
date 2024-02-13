@@ -13,8 +13,8 @@ const config: Microservice.Config = {
     clientId: process.env.KAFKA_CLIENT_ID!,
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
-      consumer: 'pose-estimation',
-      producer: 'instance-replacement'
+      consumer: 'pose-latent-combination',
+      producer: 'instance-synthesis'
     },
     groupId: 'vision-middleware-units',
     requestProcessor: handlePoseRequest

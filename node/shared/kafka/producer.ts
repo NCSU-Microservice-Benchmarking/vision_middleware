@@ -1,9 +1,6 @@
+import { request } from '../types/request';
 import { Service as Microservice, kafkaOptions } from '../types/service';
 import Kafka, { Producer as RdKafkaProducer, LibrdKafkaError, ProducerGlobalConfig, TopicConfig } from 'node-rdkafka';
-
-interface CustomMessageFormat {
-  a: string;
-}
 
 class Producer implements Microservice.Producer {
 
@@ -47,10 +44,10 @@ class Producer implements Microservice.Producer {
     });
   }
 
-  public async send(message: CustomMessageFormat): Promise<void> {
+  public async send(message: request, topic?: string): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       this.producer.produce(
-        this.topic,
+        topic ? topic : this.topic,
         null,
         Buffer.from(JSON.stringify(message)),
         null,

@@ -1,4 +1,4 @@
-import redisClient from '../../../shared/redis/client.ts';
+import redisClient from '../../../shared/redis/client';
 
 // Define cache keys
 const poseEstimationCacheKey = 'pose_estimation_cache';

@@ -1,7 +1,7 @@
 import { Service as Microservice, kafkaOptions } from '../types/service';
 import { Kafka, Admin as KafkaAdmin } from 'kafkajs';
 
-class Admin {
+class Admin implements Microservice.Admin {
   
   private admin: KafkaAdmin
 

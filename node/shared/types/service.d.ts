@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requestProcessor } from "./request";
+import { request, requestProcessor } from "./request";
 
 interface ssl {
   cert: string,
@@ -34,13 +34,22 @@ export namespace Service {
   export interface Producer {
     start: () => Promise<void>,
     shutdown: () => Promise<void>,
-    send: (message: CustomMessageFormat) => Promise<void>
+    send: producerCallback
+  }
+
+  export namespace Consumer {
+    export type producerCallback = (message: request, topic?: string) => Promise<void>
   }
 
   export interface Consumer {
     start: () => Promise<void>,
     shutdown: () => Promise<void>,
     subscribe: () => Promise<void>,
+  }
+
+  export interface Admin {
+    start?: () => Promise<void>,
+    shutdown: () => Promise<void>,
   }
 
 }

@@ -1,4 +1,4 @@
-import processPoseEstimationTag from './processPoseEstimationTag.ts';
+import processPoseEstimationTag from './processPoseEstimationTag';
 import processSegmentationBinaryMask from './processSegementationBinaryMask';
 
 import type { request } from '../../../shared/types/request.d.ts';

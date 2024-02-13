@@ -1,8 +1,6 @@
-// admin.go
-package admin
+package kafka
 
 import (
-	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
@@ -29,40 +27,4 @@ func (a *Admin) Start() error {
 
 func (a *Admin) Shutdown() {
 	a.admin.Close()
-}
-
-func (a *Admin) CreateTopic(topic string, numPartitions, replicationFactor int) error {
-	topicSpec := kafka.TopicSpecification{
-		Topic:             topic,
-		NumPartitions:     numPartitions,
-		ReplicationFactor: replicationFactor,
-	}
-
-	results, err := a.admin.CreateTopics([]kafka.TopicSpecification{topicSpec}, nil)
-	if err != nil {
-		return err
-	}
-
-	for _, result := range results {
-		if result.Error != nil {
-			return fmt.Errorf("Error creating topic: %v", result.Error)
-		}
-	}
-
-	return nil
-}
-
-func (a *Admin) DeleteTopic(topic string) error {
-	results, err := a.admin.DeleteTopics([]string{topic}, nil)
-	if err != nil {
-		return err
-	}
-
-	for _, result := range results {
-		if result.Error != nil {
-			return fmt.Errorf("Error deleting topic: %v", result.Error)
-		}
-	}
-
-	return nil
 }
