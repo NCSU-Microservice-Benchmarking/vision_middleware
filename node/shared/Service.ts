@@ -76,7 +76,6 @@ export default class Service {
     try {
       // Start Redis Client
       await redisClient.connect(); 
-      console.log(`${this.metadata.name} connected to Redis server successfully.`);
       return;
     } catch (error) {
       console.error(error);
