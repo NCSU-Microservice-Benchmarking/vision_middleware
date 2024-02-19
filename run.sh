@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Function to build and start game nodes
 start_go() {
     echo "Starting Go environment..."
     cd go/units/latent-generation
@@ -12,7 +11,6 @@ start_go() {
     echo "Go environment closed."
 }
 
-# Function to build and start game nodes
 start_node() {
     echo "Starting Node environment..."
     cd node
@@ -20,7 +18,6 @@ start_node() {
     echo "Node environment closed."
 }
 
-# Check parameter and start the corresponding part
 if [ "$1" = "go" ]; then
     start_go
 elif [ "$1" = "node" ]; then

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Function to build and start game nodes
 install_go() {
     echo "Installing Go dependencies..."
     cd go
@@ -8,7 +7,6 @@ install_go() {
     echo "Done."
 }
 
-# Function to build and start game nodes
 install_node() {
     echo "Installing Node dependencies..."
     cd node
@@ -16,7 +14,6 @@ install_node() {
     echo "Done."
 }
 
-# Check parameter and start the corresponding part
 if [ "$1" = "go" ]; then
     start_go
 elif [ "$1" = "node" ]; then
