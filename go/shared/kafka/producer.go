@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 
@@ -10,9 +11,9 @@ import (
 )
 
 type Producer struct {
-	name     string
-	producer *kafka.Producer
-	topic    string
+	Name     string
+	Producer *kafka.Producer
+	Topic    string
 }
 
 func NewProducer(name string, options types.KafkaOptions) (*Producer, error) {
@@ -31,13 +32,14 @@ func NewProducer(name string, options types.KafkaOptions) (*Producer, error) {
 	go handleEvents(p)
 
 	return &Producer{
-		name:     name,
-		producer: p,
-		topic:    options.Topics.Producer,
+		Name:     name,
+		Producer: p,
+		Topic:    options.Topics.Producer,
 	}, nil
 }
 
 func (p *Producer) Start() error {
+	fmt.Printf("%s producer connected.", p.Name)
 	return nil // No action needed to start in Go
 }
 
@@ -51,8 +53,8 @@ func (p *Producer) Send(message types.Request) error {
 	}
 
 	// send the message
-	err = p.producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &p.topic, Partition: kafka.PartitionAny},
+	err = p.Producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &p.Topic, Partition: kafka.PartitionAny},
 		Value:          newMessage,
 	}, deliveryChan)
 
@@ -87,6 +89,6 @@ func handleEvents(p *kafka.Producer) {
 }
 
 func (p *Producer) Shutdown() error {
-	defer p.producer.Close()
+	defer p.Producer.Close()
 	return nil
 }

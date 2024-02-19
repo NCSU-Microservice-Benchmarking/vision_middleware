@@ -3,10 +3,12 @@ package service
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/NCSU-Microservice-Benchmarking/vision_middleware/go/shared/kafka"
+	redisclient "github.com/NCSU-Microservice-Benchmarking/vision_middleware/go/shared/redis"
 	"github.com/NCSU-Microservice-Benchmarking/vision_middleware/go/shared/types"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -54,7 +56,7 @@ func (s *Service) configureMiddlewares() {
 }
 
 func (s *Service) configureRoutes() {
-	// Define your routes here using s.App
+	//add router
 }
 
 func (s *Service) configureKafka(kafkaOptions types.KafkaOptions) error {
@@ -84,7 +86,9 @@ func (s *Service) configureKafka(kafkaOptions types.KafkaOptions) error {
 }
 
 func (s *Service) configureRedis() {
-	// Implement Redis configuration if needed
+	if err := redisclient.ConfigureRedis(); err != nil {
+		log.Fatalf("Error configuring Redis: %v", err)
+	}
 }
 
 func (s *Service) createServer(config types.ServiceConfig) {

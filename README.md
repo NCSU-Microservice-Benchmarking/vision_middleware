@@ -1,6 +1,6 @@
 # Middleware - Microservice Benchmarking
 
-**A Node.js middleware orchestrating microservices for video anonymization, leveraging Kafka for communication and Docker multi-stage build for deployment.**
+**A middleware orchestrating microservices for video anonymization, leveraging Kafka for communication and Docker multi-stage build for deployment.**
 
 ## Overview
 

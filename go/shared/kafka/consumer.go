@@ -55,8 +55,8 @@ func (c *Consumer) Start() error {
 	if err := c.Subscribe([]string{c.Topic}); err != nil {
 		return fmt.Errorf("error subscribing to topics: %v", err)
 	}
-	c.Consume()
-
+	go c.Consume()
+	fmt.Printf("%s consumer connected.", c.Name)
 	return nil
 }
 
@@ -73,7 +73,7 @@ func (c *Consumer) handleMessage(msg *kafka.Message) {
 	}
 
 	// Produce the message to the producer topic if it wasn't just handled by cache (that would return true)
-	if c.ProducerTopic != "" && cached != true {
+	if c.ProducerTopic != "" && !cached {
 		err := c.ProducerCallback(newRequest, c.ProducerTopic)
 		if err != nil {
 			fmt.Println("Error producing message:", err)
@@ -86,7 +86,7 @@ func (c *Consumer) Subscribe(topics []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s subscribed to %s topic successfully.", c.Name, c.Topic)
+	fmt.Printf("%s consumer subscribed to topic '%s'.", c.Name, c.Topic)
 	return nil
 }
 
