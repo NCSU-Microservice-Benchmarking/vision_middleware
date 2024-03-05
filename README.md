@@ -17,3 +17,31 @@ This repository contains the middleware and microservices that comprise a benchm
 * **Segment-New Instance Combination Unit:**
     - Similar to the Pose-Latent Combination Unit.
     - Handles additional data types for instance replacement.
+
+## Installation
+
+Node.js:
+
+```bash
+./install.sh node
+```
+
+Go:
+
+```bash
+./install.sh go
+```
+
+## Run
+
+Node.js:
+
+```bash
+./run.sh node
+```
+
+Go:
+
+```bash
+./run.sh go
+```
