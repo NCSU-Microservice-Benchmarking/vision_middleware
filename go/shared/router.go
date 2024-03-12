@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"net/http"
@@ -12,8 +12,6 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 func SetupRouter() *mux.Router {
 	router := mux.NewRouter()
-
 	router.HandleFunc("/health-check", HealthCheckHandler).Methods("POST")
-
 	return router
 }

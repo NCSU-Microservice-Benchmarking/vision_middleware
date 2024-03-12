@@ -23,15 +23,15 @@ func main() {
 		KafkaOptions: types.KafkaOptions{
 			ClientID: os.Getenv("KAFKA_CLIENT_ID"),
 			Brokers:  []string{os.Getenv("KAFKA_BROKER_URL")},
-			Topics:   types.KafkaTopics{Consumer: "latent-generation"},
+			Topics:   types.KafkaTopics{Consumer: "pose-latent-combination", Producer: "instance-synthesis"},
 			GroupID:  "vision-middleware-units",
 			//RequestProcessor: handleLatentRequest
 		},
 	}
 
 	metadata := types.ServiceMetadata{
-		ID:   "0001",
-		Name: "Latent-Generation",
+		ID:   "0002",
+		Name: "Pose-Latent-Combination",
 	}
 
 	// Start service

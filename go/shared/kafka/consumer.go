@@ -86,7 +86,7 @@ func (c *Consumer) Subscribe(topics []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s consumer subscribed to topic '%s'.", c.Name, c.Topic)
+	fmt.Printf("%s consumer subscribed to topic '%s'.\n", c.Name, c.Topic)
 	return nil
 }
 

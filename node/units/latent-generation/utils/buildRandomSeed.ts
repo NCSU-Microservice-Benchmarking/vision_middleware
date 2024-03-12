@@ -1,16 +1,21 @@
-import crypto from 'crypto';
-
 export default function buildRandomSeed(videoUUID: string, instanceID: string): string {
   const combinedString = videoUUID + instanceID;
-    
-  // Convert the combined string to a buffer, use buffer to get a hash string
-  const buffer: Buffer = Buffer.from(combinedString, 'utf-8');
-  const hash: string = crypto.createHash('sha256').update(buffer).digest('hex');
-    
-  // Return a substring of the hash to use as the seed
-  const seed = hash.substring(0, 30);
-  
-  return seed;
-}
 
-  
+  // Initialize hash value
+  let hash = 0;
+
+  // Polynomial coefficients (prime numbers recommended)
+  const prime = 31;
+  const prime2 = 37;
+
+  // Calculate hash using polynomial hash function
+  for (let i = 0; i < combinedString.length; i++) {
+    hash += combinedString.charCodeAt(i) * Math.pow(prime, i);
+    hash %= prime2; // Take modulo to avoid integer overflow
+  }
+
+  // Convert hash to hexadecimal string
+  const hashString = hash.toString(16);
+
+  return hashString;
+}
