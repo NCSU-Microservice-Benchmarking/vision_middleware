@@ -14,7 +14,7 @@ const config: Microservice.Config = {
     clientId: process.env.KAFKA_CLIENT_ID!,
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
-      consumer: 'latent-generation'
+      consumer: 'latent_generation_request'
     },
     groupId: 'vision-middleware-units',
     requestProcessor: handleLatentRequest,
