@@ -50,6 +50,7 @@ class Consumer implements Microservice.Consumer {
     try {
 
       // log message
+      console.log(message);
       const { topic, partition, value, offset, key, timestamp } = message;
       const prefix = `${topic}[${partition} | ${offset}] / ${timestamp}`
       console.log(`- ${prefix} ${key}#${value}`);

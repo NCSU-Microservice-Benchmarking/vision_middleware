@@ -9,6 +9,7 @@ import type { request } from '../../../shared/types/request.d.ts';
 
 export default async function generateLatent(request: request): Promise<boolean | request > {
   try {
+    console.log(request);
     const { videoUUID, frameNumber, instanceID } = request;
     const key = `${videoUUID}-${instanceID}`;
 
