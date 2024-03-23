@@ -8,8 +8,8 @@ import type { request } from '../../../shared/types/request';
 
 export default async function processPoseEstimationTag (request: request): Promise<boolean | request> {
   try {
-    const { videoUUID, frameNumber, instanceID, poseEstimationTag } = request;
-    const cacheKey = `${videoUUID}:${frameNumber}:${instanceID}`;
+    const { video_uuid, frame_number, instance_id, poseEstimationTag } = request;
+    const cacheKey = `${video_uuid}:${frame_number}:${instance_id}`;
     
     // Check if the key exists in the segmentation binary mask cache
     const segmentationMaskExists = await redisClient.exists(segmentationMaskCacheKey);
@@ -22,9 +22,9 @@ export default async function processPoseEstimationTag (request: request): Promi
       // Combine pose estimation tag and segmentation binary mask for instance synthesis request
       const segmentationMask = await redisClient.hGet(segmentationMaskCacheKey, cacheKey);
       const instanceSynthesisRequest: request = {
-        videoUUID: videoUUID,
-        frameNumber: frameNumber,
-        instanceID: instanceID,
+        video_uuid: video_uuid,
+        frame_number: frame_number,
+        instance_id: instance_id,
         poseEstimationTag: poseEstimationTag,
         segmentationMask: segmentationMask
       };

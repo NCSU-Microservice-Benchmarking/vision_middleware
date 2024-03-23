@@ -10,8 +10,8 @@ import type { request } from '../../../shared/types/request.d.ts';
 export default async function generateLatent(request: request): Promise<boolean | request > {
   try {
     console.log(request);
-    const { videoUUID, frameNumber, instanceID } = request;
-    const key = `${videoUUID}-${instanceID}`;
+    const { video_uuid, frame_number, instance_id } = request;
+    const key = `${video_uuid}-${instance_id}`;
 
     const options: ClientCommandOptions = {
       // add any options?
@@ -25,7 +25,7 @@ export default async function generateLatent(request: request): Promise<boolean 
     }
 
     // Build a random seed with video UUID and instance ID
-    const randomSeed: string = buildRandomSeed(videoUUID, instanceID);
+    const randomSeed: string = buildRandomSeed(video_uuid, instance_id);
 
     // Use the seed to generate a 128x128 random image as the latent
     const latentData: Buffer = generateRandomImage(randomSeed);

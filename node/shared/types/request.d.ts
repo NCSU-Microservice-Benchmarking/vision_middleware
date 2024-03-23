@@ -1,7 +1,7 @@
 export interface request {
-  videoUUID: any,
-  frameNumber: any
-  instanceID: any,
+  video_uuid: any,
+  frame_number: any
+  instance_id: any,
   type?: any,
   poseEstimationTag?: any,
   segmentationMask?: any

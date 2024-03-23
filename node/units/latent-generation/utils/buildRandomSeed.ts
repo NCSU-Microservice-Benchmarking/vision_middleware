@@ -1,5 +1,5 @@
-export default function buildRandomSeed(videoUUID: string, instanceID: string): string {
-  const combinedString = videoUUID + instanceID;
+export default function buildRandomSeed(video_uuid: string, instance_id: string): string {
+  const combinedString = video_uuid + instance_id;
 
   // Initialize hash value
   let hash = 0;

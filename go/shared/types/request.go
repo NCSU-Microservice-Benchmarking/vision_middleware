@@ -2,9 +2,9 @@ package types
 
 // Request represents the request object
 type Request struct {
-	VideoUUID         interface{}
-	FrameNumber       interface{}
-	InstanceID        interface{}
+	video_uuid        interface{}
+	frame_number      interface{}
+	instance_id       interface{}
 	Type              interface{}
 	PoseEstimationTag interface{}
 	SegmentationMask  interface{}
