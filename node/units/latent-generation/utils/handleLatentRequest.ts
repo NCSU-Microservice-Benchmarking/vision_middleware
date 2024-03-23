@@ -9,16 +9,15 @@ import type { request } from '../../../shared/types/request.d.ts';
 
 export default async function generateLatent(request: request): Promise<boolean | request > {
   try {
-    console.log(request);
     const { video_uuid, frame_number, instance_id } = request;
-    const key = `${video_uuid}-${instance_id}`;
+    const key: string = `${video_uuid}-${instance_id}`;
 
     const options: ClientCommandOptions = {
       // add any options?
     }
 
     // Check if (video UUID, instance ID) pair exists in the latent database
-    const value = await client.get(commandOptions(options), key);
+    const value = await client.get(key);
     if (value) {
       console.log(`Latent data for ${key} already exists. Skipping.`);
       return true;
