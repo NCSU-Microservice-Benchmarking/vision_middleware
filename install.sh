@@ -15,9 +15,9 @@ install_node() {
 }
 
 if [ "$1" = "go" ]; then
-    start_go
+    install_go
 elif [ "$1" = "node" ]; then
-    start_node
+    install_node
 else
     echo "Invalid parameter. Please specify 'go' or 'node'."
     exit 1
