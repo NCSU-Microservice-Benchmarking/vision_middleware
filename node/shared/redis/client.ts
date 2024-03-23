@@ -2,7 +2,7 @@ import { RedisClientOptions, createClient } from 'redis';
 
 const clientOptions: RedisClientOptions = {
   url: process.env.REDIS_URL,
-  legacyMode: true,
+  legacyMode: false,
   socket: {
     connectTimeout: 50000
   }
