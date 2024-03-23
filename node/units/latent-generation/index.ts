@@ -8,7 +8,7 @@ import router from "./router";
 import handleLatentRequest from './utils/handleLatentRequest';
 
 const config: Microservice.Config = {
-  port: 8080,
+  port: 7180,
   router: router,
   kafkaOptions: {
     clientId: process.env.KAFKA_CLIENT_ID!,

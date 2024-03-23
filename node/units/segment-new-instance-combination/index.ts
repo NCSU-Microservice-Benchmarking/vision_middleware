@@ -8,7 +8,7 @@ import router from "./router";
 import handleSegmentNewRequest from '../segment-new-instance-combination/utils/handleSegementNewRequest';
 
 const config: Microservice.Config = {
-  port: 8082,
+  port: 7182,
   router: router,
   kafkaOptions: {
     clientId: process.env.KAFKA_CLIENT_ID!,

@@ -7,7 +7,7 @@ import router from "./router";
 import handlePoseRequest from './utils/handlePoseRequest'
 
 const config: Microservice.Config = {
-  port: 8081,
+  port: 7181,
   router: router,
   kafkaOptions: {
     clientId: process.env.KAFKA_CLIENT_ID!,

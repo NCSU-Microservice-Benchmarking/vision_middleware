@@ -6,7 +6,7 @@
     "start:segment": "ts-node units/segment-new-instance-combination/index"
   },
   "engines": {
-    "node": "v20.11.0",
+    "node": "v20.11.1",
     "npm": "10.2.4"
   },
   "dependencies": {
