@@ -69,7 +69,7 @@ export default class Service {
       this.producer = new Producer(this.metadata.name, kafkaOptions);
     }
     // pass accesss to the producer to the consumer 
-    this.consumer = new Consumer(this.metadata.name, kafkaOptions, this.producer ? this.producer.send : undefined);
+    this.consumer = new Consumer(this.metadata.name, kafkaOptions, this.producer ? this.producer.send.bind(this.producer) : null);
   }
 
   private async configureRedis() {
