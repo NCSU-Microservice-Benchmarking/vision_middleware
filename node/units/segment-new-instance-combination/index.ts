@@ -15,7 +15,7 @@ const config: Microservice.Config = {
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
       consumer: 'segmentation_request',
-      producer: 'instance-replacement'
+      producer: 'latent_generation_request'
     },
     groupId: 'vision-middleware-units',
     requestProcessor: handleSegmentNewRequest
