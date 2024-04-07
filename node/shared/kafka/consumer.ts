@@ -50,10 +50,9 @@ class Consumer implements Microservice.Consumer {
     try {
 
       // log message
-      console.log(message);
       const { topic, partition, value, offset, key, timestamp } = message;
       const prefix = `${topic}[${partition} | ${offset}] / ${timestamp}`
-      console.log(`- ${prefix} ${key}#${value}`);
+      console.log(`- ${prefix} ${key ? key : ''}#${value}`);
 
       // parse message for the request
       const request: request = JSON.parse(value!.toString());

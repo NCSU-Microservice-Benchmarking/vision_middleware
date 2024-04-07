@@ -17,7 +17,7 @@ export default async function generateLatent(request: request): Promise<boolean 
     }
 
     // Check if (video UUID, instance ID) pair exists in the latent database
-    const value = await client.get(key);
+    const value = await client.get(commandOptions(options), key);
     if (value) {
       console.log(`Latent data for ${key} already exists. Skipping.`);
       return true;

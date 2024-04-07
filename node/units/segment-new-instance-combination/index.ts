@@ -14,7 +14,7 @@ const config: Microservice.Config = {
     clientId: process.env.KAFKA_CLIENT_ID!,
     brokers: [process.env.KAFKA_BROKER_URL!],
     topics: {
-      consumer: 'segment-new-instance-combination',
+      consumer: 'segmentation_request',
       producer: 'instance-replacement'
     },
     groupId: 'vision-middleware-units',
