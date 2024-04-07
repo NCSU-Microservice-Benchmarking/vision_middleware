@@ -14,7 +14,7 @@ class Consumer implements Microservice.Consumer {
   private producerCallback?: Microservice.Consumer.producerCallback;
   private producerTopic?: string;
 
-  constructor(name: string, options: kafkaOptions, producerCallback: Microservice.Consumer.producerCallback) {
+  constructor(name: string, options: kafkaOptions, producerCallback?: Microservice.Consumer.producerCallback) {
     const { topics, requestProcessor } = options;
     this.name = name;
     this.topic = topics.consumer;
