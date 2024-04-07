@@ -45,7 +45,7 @@ class Producer implements Microservice.Producer {
   }
 
   public async send(message: request, topic?: string): Promise<void> {
-    console.log(typeof this.producer);
+    console.log(this.producer);
     console.log(typeof this.producer.produce);
     return new Promise<void>(async (resolve, reject) => {
       this.producer.produce(
