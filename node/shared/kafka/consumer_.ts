@@ -21,7 +21,7 @@ class Consumer implements Microservice.Consumer {
       this.producerCallback = producerCallback;
       this.producerTopic = topics.producer;
     }
-    this.requestProcessor = this.requestProcessor;
+    this.requestProcessor = requestProcessor;
   }
 
   public async start(): Promise<void> {
